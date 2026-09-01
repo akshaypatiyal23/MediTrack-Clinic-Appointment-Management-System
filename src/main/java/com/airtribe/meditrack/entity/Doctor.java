@@ -3,19 +3,20 @@ package main.java.com.airtribe.meditrack.entity;
 import main.java.com.airtribe.meditrack.entity.Person;
 import main.java.com.airtribe.meditrack.enums.Gender;
 import main.java.com.airtribe.meditrack.enums.Specialization;
+import main.java.com.airtribe.meditrack.interfaces.Searchable;
 import main.java.com.airtribe.meditrack.util.IdGenerator;
 
 import java.util.Date;
 
-public class Doctor extends Person {
+public class Doctor extends Person implements Searchable {
    private Specialization specialization;
    private int consultationFee;
    private int workingHours;
    private String licenseNumber;
    private int yearsOfExperience;
 
-   public  Doctor(String name, Date dateOfBirth, Gender gender, String address, long phoneNumber,Specialization specialization, int consultationFee, int workingHours, String licenseNumber, int yearsOfExperience){
-       super(IdGenerator.getDoctorId(), name, dateOfBirth, gender, address, phoneNumber);
+   public  Doctor(String name, Date dateOfBirth, int age, Gender gender, String address, long phoneNumber,Specialization specialization, int consultationFee, int workingHours, String licenseNumber, int yearsOfExperience){
+       super(IdGenerator.getDoctorId(), name, dateOfBirth, age, gender, address, phoneNumber);
        this.specialization = specialization;
        this.consultationFee = consultationFee;
        this.workingHours = workingHours;
@@ -62,6 +63,12 @@ public class Doctor extends Person {
     public void setYearsOfExperience(int yearsOfExperience) {
         this.yearsOfExperience = yearsOfExperience;
     }
+
+    @Override
+    public boolean matches(String keyword) {
+        return getName().equalsIgnoreCase(keyword) || String.valueOf(getId()).equals(keyword) || String.valueOf(getAge()).equals(keyword);
+    }
+
 }
 
 
