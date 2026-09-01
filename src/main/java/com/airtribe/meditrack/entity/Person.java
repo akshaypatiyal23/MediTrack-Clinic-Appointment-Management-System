@@ -9,20 +9,29 @@ public class Person {
     private int id;
     private String name;
     private Date dateOfBirth;
+    private int age;
     private Gender gender;
     private String address;
     private long phoneNumber;
 
-    public Person(int id, String name, Date dateOfBirth, Gender gender,String address, long phoneNumber){
+    public Person(int id, String name, Date dateOfBirth, int age, Gender gender,String address, long phoneNumber){
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
+        this.age = age;
         this.gender = gender;
         this.address = address;
         this.phoneNumber = phoneNumber;
 
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     public int getId() {
         return id;
