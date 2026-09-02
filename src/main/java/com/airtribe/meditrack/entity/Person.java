@@ -3,18 +3,19 @@ package main.java.com.airtribe.meditrack.entity;
 import main.java.com.airtribe.meditrack.enums.Gender;
 import main.java.com.airtribe.meditrack.util.IdGenerator;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Person {
     private int id;
     private String name;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private int age;
     private Gender gender;
     private String address;
     private long phoneNumber;
 
-    public Person(int id, String name, Date dateOfBirth, int age, Gender gender,String address, long phoneNumber){
+    public Person(int id, String name, LocalDate dateOfBirth, int age, Gender gender,String address, long phoneNumber){
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -49,11 +50,11 @@ public class Person {
         this.name = name;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

@@ -6,6 +6,7 @@ import main.java.com.airtribe.meditrack.enums.Specialization;
 import main.java.com.airtribe.meditrack.interfaces.Searchable;
 import main.java.com.airtribe.meditrack.util.IdGenerator;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Doctor extends Person implements Searchable {
@@ -15,7 +16,7 @@ public class Doctor extends Person implements Searchable {
    private String licenseNumber;
    private int yearsOfExperience;
 
-   public  Doctor(String name, Date dateOfBirth, int age, Gender gender, String address, long phoneNumber,Specialization specialization, int consultationFee, int workingHours, String licenseNumber, int yearsOfExperience){
+   public  Doctor(String name, LocalDate dateOfBirth, int age, Gender gender, String address, long phoneNumber, Specialization specialization, int consultationFee, int workingHours, String licenseNumber, int yearsOfExperience){
        super(IdGenerator.getDoctorId(), name, dateOfBirth, age, gender, address, phoneNumber);
        this.specialization = specialization;
        this.consultationFee = consultationFee;
