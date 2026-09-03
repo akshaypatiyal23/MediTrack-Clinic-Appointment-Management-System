@@ -1,9 +1,10 @@
 package main.java.com.airtribe.meditrack.util;
 
 public class IdGenerator {
-     static int doctorId = 0;
-     static int patientId = 0;
-     static int appointmentId =0;
+     static int doctorId = 1;
+     static int patientId = 1;
+     static int appointmentId =1;
+     static  int billId = 1;
    public static int getDoctorId(){
        return doctorId++;
    }
@@ -14,5 +15,9 @@ public class IdGenerator {
 
     public static int getAppointmentId() {
        return appointmentId++;
+    }
+
+    public static int getBillId(){
+       return billId++;
     }
 }

@@ -3,7 +3,7 @@ package main.java.com.airtribe.meditrack.entity;
 import main.java.com.airtribe.meditrack.constants.TaxCalculator;
 import main.java.com.airtribe.meditrack.interfaces.Payable;
 
-public class Bill {
+public class Bill implements Payable{
     private int billId;
     private Patient patient;
     private Appointment appointment;
@@ -63,4 +63,9 @@ public class Bill {
     }
 
 
+
+    @Override
+    public double calculatePayment() {
+        return getConsultationFee()+getTax();
+    }
 }

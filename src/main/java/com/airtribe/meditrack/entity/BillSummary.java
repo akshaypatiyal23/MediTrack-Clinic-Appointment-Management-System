@@ -15,7 +15,7 @@ public final class BillSummary {
         this.doctorName = bill.getAppointment().getDoctor().getName();
         this.consultationFee = bill.getConsultationFee();
         this.tax = bill.getTax();
-        this.totalAmount = bill.getTotalAmount();
+        this.totalAmount = bill.calculatePayment();
     }
 
     public int getBillId() {

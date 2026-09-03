@@ -6,7 +6,6 @@ import main.java.com.airtribe.meditrack.enums.Symptom;
 public class SymptomRecommendationRule {
     private Symptom symptom;
     private Specialization specialization;
-    private int weight;
     public  SymptomRecommendationRule(Symptom symptom, Specialization specialization){
         this.symptom = symptom;
         this.specialization = specialization;
@@ -28,11 +27,5 @@ public class SymptomRecommendationRule {
         this.specialization = specialization;
     }
 
-    public int getWeight() {
-        return weight;
-    }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
 }
