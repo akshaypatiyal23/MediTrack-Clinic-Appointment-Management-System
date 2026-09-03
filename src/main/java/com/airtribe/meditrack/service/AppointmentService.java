@@ -14,10 +14,11 @@ import java.util.*;
 public class AppointmentService {
 
     private final Map<Integer, Appointment> appointments = new HashMap<>();
-    public void createAppointment(Patient patient, Doctor doctor, LocalDateTime appointmentDateTime){
+    public Appointment createAppointment(Patient patient, Doctor doctor, LocalDateTime appointmentDateTime){
       Appointment appointment = new Appointment(doctor, patient, appointmentDateTime);
         appointments.put(appointment.getAppointmentId(), appointment);
-        System.out.println("Appointment added successfully!");
+        return appointment;
+//        System.out.println("Appointment added successfully!");
     }
 
     public Appointment searchAppointmentById(int appointmentId) {
@@ -46,6 +47,12 @@ public class AppointmentService {
         }
 
         return result;
+    }
+    public void printAppointment(Appointment appointment) {
+        System.out.println("Appointment ID: " + appointment.getAppointmentId());
+        System.out.println("Patient: " + appointment.getPatient().getName());
+        System.out.println("Doctor: " + appointment.getDoctor().getName());
+        System.out.println("Date & Time: " + appointment.getAppointmentDateTime());
     }
 
     public void cancelAppointment(int appointmentId){

@@ -11,6 +11,8 @@ public enum Specialization {
         ENT,
         GYNECOLOGY,
         PSYCHIATRY,
-        ONCOLOGY
+        ONCOLOGY,
+        DENTISTRY,
+        OPHTHALMOLOGY
 
 }
