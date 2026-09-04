@@ -570,9 +570,6 @@ Possible future enhancements include:
 
 ---
 
-# 👨‍💻 Author
-
-**Akshay Patiyal**
 
 GitHub:
 https://github.com/akshaypatiyal23/MediTrack-Clinic-Appointment-Management-System
