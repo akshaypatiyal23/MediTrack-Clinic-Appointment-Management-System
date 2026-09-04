@@ -31,17 +31,17 @@ The application follows a service-oriented structure where the `Main` class hand
 * Remove a doctor
 * Store doctor information including:
 
-  * Name
-  * Date of birth
-  * Age
-  * Gender
-  * Address
-  * Phone number
-  * Specialization
-  * Consultation fee
-  * Working hours
-  * License number
-  * Experience
+    * Name
+    * Date of birth
+    * Age
+    * Gender
+    * Address
+    * Phone number
+    * Specialization
+    * Consultation fee
+    * Working hours
+    * License number
+    * Experience
 * Validate doctor information
 
 ---
@@ -570,6 +570,9 @@ Possible future enhancements include:
 
 ---
 
+# 👨‍💻 Author
+
+**Akshay Patiyal**
 
 GitHub:
 https://github.com/akshaypatiyal23/MediTrack-Clinic-Appointment-Management-System
