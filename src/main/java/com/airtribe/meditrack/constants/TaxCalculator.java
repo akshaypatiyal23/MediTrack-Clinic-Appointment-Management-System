@@ -1,4 +1,4 @@
-package main.java.com.airtribe.meditrack.constants;
+package com.airtribe.meditrack.constants;
 
 public class TaxCalculator {
 

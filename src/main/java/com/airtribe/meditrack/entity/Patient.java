@@ -1,28 +1,47 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.enums.Gender;
-import main.java.com.airtribe.meditrack.interfaces.Searchable;
-import main.java.com.airtribe.meditrack.util.IdGenerator;
+import com.airtribe.meditrack.enums.Gender;
+import com.airtribe.meditrack.util.IdGenerator;
 
-import javax.crypto.spec.OAEPParameterSpec;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class Patient extends Person implements Searchable {
+public class Patient extends Person implements Cloneable {
+
+    private List<String> medicalHistory;
 
     public Patient(String name, LocalDate dateOfBirth, int age, Gender gender, String address, long phoneNumber) {
         super(IdGenerator.getPatientId(), name, dateOfBirth, age, gender, address, phoneNumber);
-
-
-
+        this.medicalHistory = new ArrayList<>();
     }
 
+    public void addMedicalHistory(String note) {
+        medicalHistory.add(note);
+    }
 
+    public List<String> getMedicalHistory() {
+        return Collections.unmodifiableList(medicalHistory);
+    }
 
     @Override
-    public boolean matches(String keyword) {
-        return getName().equalsIgnoreCase(keyword)
-                || String.valueOf(getId()).equals(keyword)
-                    || String.valueOf(getAge()).equals(keyword);
+    public String getDetails() {
+        return super.getDetails() + ", Medical History: " + medicalHistory;
+    }
+
+    /**
+     * Deep copy: the nested {@code medicalHistory} list is copied into a new
+     * list so mutating the clone's history never affects the original.
+     */
+    @Override
+    public Patient clone() {
+        try {
+            Patient cloned = (Patient) super.clone();
+            cloned.medicalHistory = new ArrayList<>(this.medicalHistory);
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 }

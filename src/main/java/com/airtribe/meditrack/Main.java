@@ -1,19 +1,20 @@
-package main.java.com.airtribe.meditrack;
+package com.airtribe.meditrack;
 
-import main.java.com.airtribe.meditrack.entity.*;
-import main.java.com.airtribe.meditrack.enums.Gender;
-import main.java.com.airtribe.meditrack.enums.Specialization;
-import main.java.com.airtribe.meditrack.enums.Symptom;
-import main.java.com.airtribe.meditrack.exception.InvalidDataException;
-import main.java.com.airtribe.meditrack.service.*;
+import com.airtribe.meditrack.entity.*;
+import com.airtribe.meditrack.enums.Gender;
+import com.airtribe.meditrack.enums.Specialization;
+import com.airtribe.meditrack.enums.Symptom;
+import com.airtribe.meditrack.constants.AppConfig;
+import com.airtribe.meditrack.exception.InvalidDataException;
+import com.airtribe.meditrack.service.*;
+import com.airtribe.meditrack.util.DateUtil;
+import com.airtribe.meditrack.util.Validator;
 
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -25,8 +26,13 @@ public class Main {
     static AppointmentService appointmentService = new AppointmentService();
     static BillService billService = new BillService();
     static SymptomRecommendationService symptomRecommendationService = new SymptomRecommendationService();
-    static void main(String[] args) {
-        System.out.println("Welcome to MediTrack Clinic!");
+
+    static {
+        appointmentService.addObserver(new ConsoleAppointmentNotifier());
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to " + AppConfig.getInstance().getClinicName() + "!");
         while (true) {
             try{
                 mainList();
@@ -47,12 +53,15 @@ public class Main {
                                         getDoctorBySpecialization();
                                         break;
                                     case 4:
-                                        getAllDoctors();
+                                        searchDoctorByKeyword();
                                         break;
                                     case 5:
-                                        removeADoctor();
+                                        getAllDoctors();
                                         break;
                                     case 6:
+                                        removeADoctor();
+                                        break;
+                                    case 7:
                                         break doctorServiceLoop;
                                     default:
                                         System.out.println("Please enter a valid input!");
@@ -77,12 +86,21 @@ public class Main {
                                         getPatientById();
                                         break;
                                     case 3:
-                                        getAllPatients();
+                                        searchPatientByName();
                                         break;
                                     case 4:
-                                        removeAPatient();
+                                        searchPatientsByAgeRange();
                                         break;
                                     case 5:
+                                        getAllPatients();
+                                        break;
+                                    case 6:
+                                        removeAPatient();
+                                        break;
+                                    case 7:
+                                        clonePatientDemo();
+                                        break;
+                                    case 8:
                                         break patientServiceLoop;
                                     default:
                                         System.out.println("Enter a valid input");
@@ -206,9 +224,13 @@ public class Main {
                         break;
 
                     case 7:
-                        return;
+                        analyticsDashboard();
+                        break;
 
                     case 8:
+                        return;
+
+                    default:
                         System.out.println("Enter a valid input");
                 }
             } catch (InputMismatchException e){
@@ -220,7 +242,7 @@ public class Main {
     private static void createEmergencyAppointment(){
         try {
             System.out.println("Enter the ID of the Patient");
-            Patient patient = patientService.getPatientById(sc.nextInt());
+            Patient patient = patientService.searchPatient(sc.nextInt());
             System.out.println("Enter the ID of the Doctor");
             Doctor doctor = doctorService.getDoctorById(sc.nextInt());
             Appointment appointment = appointmentService.createAppointment(patient, doctor, LocalDateTime.now());
@@ -424,7 +446,7 @@ public class Main {
     private static void appointmentsSearchForPatient(){
         try {
             System.out.println("Enter the ID of the Patient to see the list of Appointments");
-            Patient patient = patientService.getPatientById(sc.nextInt());
+            Patient patient = patientService.searchPatient(sc.nextInt());
             List<Appointment> appointments = appointmentService.listAppointmentsByPatient(patient);
             for(Appointment appointment: appointments){
                 appointmentService.printAppointment(appointment);
@@ -455,11 +477,7 @@ public class Main {
             sc.nextLine();
             try {
                 System.out.println("Enter the new Date and Time for the appointment (in format yyyy-MM-dd HH:mm");
-                DateTimeFormatter dateTimeFormatter =
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-                LocalDateTime localDateTime =
-                        LocalDateTime.parse(sc.nextLine(), dateTimeFormatter);
+                LocalDateTime localDateTime = DateUtil.parseDateTime(sc.nextLine());
                 appointmentService.updateAppointmentDateTime(appointmentId, localDateTime);
 
             } catch (DateTimeParseException e){
@@ -475,7 +493,7 @@ public class Main {
             System.out.println("Enter the Appointment Id where you want to update Patient");
             int appointmentId = sc.nextInt();
             System.out.println("Enter the ID of the new Patient you want to add");
-            Patient patient = patientService.getPatientById(sc.nextInt());
+            Patient patient = patientService.searchPatient(sc.nextInt());
             appointmentService.updatePatient(appointmentId, patient);
 
         }catch (InvalidDataException e){
@@ -508,9 +526,7 @@ public class Main {
         try {
             try{
             System.out.println("Enter the Date and Time of Appointment (in format yyyy-MM-dd");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//            sc.nextLine();
-            LocalDate localDate = LocalDate.parse(sc.nextLine(), formatter);
+            LocalDate localDate = DateUtil.parseDate(sc.nextLine());
             List<Appointment> appointments = appointmentService.searchAppointmentsByDate(localDate);
             for (Appointment appointment : appointments) {
                 appointmentService.printAppointment(appointment);
@@ -541,15 +557,14 @@ public class Main {
 
         try {
             System.out.println("Enter the id of the Patient");
-            Patient patient = patientService.getPatientById(sc.nextInt());
+            Patient patient = patientService.searchPatient(sc.nextInt());
             System.out.println("Enter the id of the Doctor");
             Doctor doctor = doctorService.getDoctorById(sc.nextInt());
             sc.nextLine();
             try {
                 System.out.println("Enter the Date and Time (in format yyyy-MM-dd HH:mm) for the Appointment");
                 String input = sc.nextLine();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                LocalDateTime appointmentDateTime = LocalDateTime.parse(input, formatter);
+                LocalDateTime appointmentDateTime = DateUtil.parseDateTime(input);
                 if (appointmentDateTime.isBefore(LocalDateTime.now())) {
                     System.out.println("Appointment cannot be scheduled in the past.");
                     return;
@@ -609,7 +624,7 @@ public class Main {
         System.out.println("Enter the Id of the Patient you want to search");
         try{
 
-            Patient patient = patientService.getPatientById(sc.nextInt());
+            Patient patient = patientService.searchPatient(sc.nextInt());
             patientService.printPatient(patient);
 
         } catch (InvalidDataException e){
@@ -618,54 +633,84 @@ public class Main {
     }
     private static void addPatient(){
         sc.nextLine();
-        System.out.println("Enter the Full Name of Patient");
-        String name = sc.nextLine();
-        if (name.trim().isEmpty() || !name.matches("[a-zA-Z ]+")) {
-            System.out.println("Please enter a valid name.");
-            return;
-        }
         try {
-            System.out.println("Enter the Date of Birth of Patient");
-            LocalDate dateOfBirth = LocalDate.parse(sc.nextLine());
-            if (dateOfBirth.isAfter(LocalDate.now())) {
-                System.out.println("Date of birth cannot be in the future.");
-                return;
-            }
-            int age = Period.between(
-                    dateOfBirth,
-                    LocalDate.now()
-            ).getYears();
-            if (age < 0) {
-                System.out.println("Invalid date of birth.");
-                return;
-            }
+            System.out.println("Enter the Full Name of Patient");
+            String name = sc.nextLine();
+            Validator.validateName(name);
+
+            System.out.println("Enter the Date of Birth of Patient (in format yyyy-MM-dd)");
+            LocalDate dateOfBirth = DateUtil.parseDate(sc.nextLine());
+            Validator.validateDateOfBirth(dateOfBirth);
+            int age = DateUtil.calculateAge(dateOfBirth);
+
             Gender gender = getGender("Patient");
             sc.nextLine();
             System.out.println("Enter the Address of Patient");
             String address = sc.nextLine();
-            if (address.trim().isEmpty()) {
-                System.out.println("Please enter a valid address.");
-                return;
-            }
+            Validator.validateAddress(address);
+
             System.out.println("Enter the Phone Number of Patient");
             long phoneNumber = sc.nextLong();
-            if (String.valueOf(phoneNumber).length() != 10) {
-                System.out.println("Please enter a valid 10-digit phone number.");
-                return;
-            }
+            Validator.validatePhoneNumber(phoneNumber);
+
             Patient patient = new Patient(name, dateOfBirth, age, gender, address, phoneNumber);
             patientService.addPatient(patient);
-        }catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             System.out.println("Please enter the date in yyyy-MM-dd format.");
+        } catch (InvalidDataException e) {
+            System.out.println(e.getMessage());
         }
     }
+
+    private static void searchPatientByName(){
+        sc.nextLine();
+        System.out.println("Enter the Name of the Patient you want to search");
+        String name = sc.nextLine();
+        try {
+            List<Patient> patients = patientService.searchPatient(name);
+            patients.forEach(patientService::printPatient);
+        } catch (InvalidDataException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void searchPatientsByAgeRange(){
+        try {
+            System.out.println("Enter the minimum age");
+            int minAge = sc.nextInt();
+            System.out.println("Enter the maximum age");
+            int maxAge = sc.nextInt();
+            List<Patient> patients = patientService.searchPatient(minAge, maxAge);
+            patients.forEach(patientService::printPatient);
+        } catch (InvalidDataException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void clonePatientDemo(){
+        try {
+            System.out.println("Enter the Id of the Patient to clone");
+            Patient original = patientService.searchPatient(sc.nextInt());
+            Patient clone = original.clone();
+            clone.addMedicalHistory("Noted only on the cloned copy");
+            System.out.println("Original patient medical history: " + original.getMedicalHistory());
+            System.out.println("Cloned patient medical history:    " + clone.getMedicalHistory());
+            System.out.println("Deep copy confirmed — mutating the clone's medical history left the original untouched.");
+        } catch (InvalidDataException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private static void patientServiceList(){
         System.out.println("Select an option\n" +
                 "1. Add a Patient\n" +
                 "2. Get Patient by Id\n" +
-                "3. Get All Patients\n" +
-                "4. Remove a Patient\n" +
-                "5. Previous menu");
+                "3. Search Patient by Name\n" +
+                "4. Search Patients by Age Range\n" +
+                "5. Get All Patients\n" +
+                "6. Remove a Patient\n" +
+                "7. Clone a Patient (deep copy demo)\n" +
+                "8. Previous menu");
     }
 
 
@@ -730,8 +775,17 @@ public class Main {
                 "4. Billing Services - View and manage your bills and bill summaries\n" +
                 "5. Get Doctor Recommendation based on your symptoms\n" +
                 "6. Emergency Services - Get immediate assistance\n" +
-                "7. Exit");
+                "7. Analytics Dashboard\n" +
+                "8. Exit");
 
+    }
+
+    private static void analyticsDashboard(){
+        System.out.println("========== ANALYTICS DASHBOARD ==========");
+        System.out.printf("Average Consultation Fee: %.2f%n", doctorService.getAverageConsultationFee());
+        System.out.println("Doctor count by specialization: " + doctorService.countDoctorsBySpecialization());
+        System.out.println("Appointments per doctor: " + appointmentService.countAppointmentsPerDoctor());
+        System.out.println("==========================================");
     }
 
     private  static  void doctorServiceList(){
@@ -739,84 +793,70 @@ public class Main {
                 "1. Add a Doctor\n" +
                 "2. Get Doctor by Id\n" +
                 "3. Get Doctor by Specialization\n" +
-                "4. Get All Doctors\n" +
-                "5. Remove a Doctor\n" +
-                "6. Previous menu");
+                "4. Search Doctor by Name/ID/Age\n" +
+                "5. Get All Doctors\n" +
+                "6. Remove a Doctor\n" +
+                "7. Previous menu");
     }
 
         private static void addDoctor(){
             sc.nextLine();
-            System.out.println("Enter the Full Name of Doctor");
-            String name = sc.nextLine();
-            if (name.trim().isEmpty() || !name.matches("[a-zA-Z ]+")) {
-                System.out.println("Please enter a valid name.");
-                return;
-            }
-
-            System.out.println("Enter the Date of Birth of Doctor (in format yyyy-MM-dd)");
             try {
-                LocalDate dateOfBirth = LocalDate.parse(sc.nextLine());
-                if (dateOfBirth.isAfter(LocalDate.now())) {
-                    System.out.println("Date of birth cannot be in the future.");
-                    return;
-                }
-                int age = Period.between(
-                        dateOfBirth,
-                        LocalDate.now()
-                ).getYears();
+                System.out.println("Enter the Full Name of Doctor");
+                String name = sc.nextLine();
+                Validator.validateName(name);
 
-            Gender gender = getGender("Doctor");
-            sc.nextLine();
-            System.out.println("Enter the Address of Doctor");
-            String address = sc.nextLine();
-                if (address.trim().isEmpty()) {
-                    System.out.println("Please enter a valid address.");
-                    return;
-                }
-            System.out.println("Enter the Phone Number of Doctor");
-            long phoneNumber = sc.nextLong();
-                if (String.valueOf(phoneNumber).length() != 10) {
-                    System.out.println("Please enter a valid 10-digit phone number.");
-                    return;
-                }
-            Specialization specialization = getSpecialization();
-            System.out.println("Enter the Consultation Fee of Doctor");
-            int consultationFee = sc.nextInt();
-                if (consultationFee <= 0) {
-                    System.out.println("Consultation fee must be greater than 0.");
-                    return;
-                }
-            System.out.println("Enter the daily Working hours of Doctor");
-            int workingHours = sc.nextInt();
-                if (workingHours <= 0 || workingHours > 24) {
-                    System.out.println("Working hours must be between 1 and 24.");
-                    return;
-                }
-            sc.nextLine();
-            System.out.println("Enter the License Number of Doctor");
-            String licenseNumber = sc.nextLine();
-                if (licenseNumber.trim().isEmpty()) {
-                    System.out.println("Please enter a valid license number.");
-                    return;
-                }
-            System.out.println("Enter the Experience (in years) of Doctor");
-            int yearsOfExperience = sc.nextInt();
-                if (yearsOfExperience < 0 || yearsOfExperience > age - 18) {
-                    System.out.println("Please enter valid experience.");
-                    return;
-                }
-            Doctor doctor = new Doctor(name, dateOfBirth, age, gender, address, phoneNumber, specialization, consultationFee, workingHours, licenseNumber, yearsOfExperience);
-            doctorService.addDoctor(doctor);
-            }catch (DateTimeParseException e){
+                System.out.println("Enter the Date of Birth of Doctor (in format yyyy-MM-dd)");
+                LocalDate dateOfBirth = DateUtil.parseDate(sc.nextLine());
+                Validator.validateDateOfBirth(dateOfBirth);
+                int age = DateUtil.calculateAge(dateOfBirth);
+
+                Gender gender = getGender("Doctor");
+                sc.nextLine();
+                System.out.println("Enter the Address of Doctor");
+                String address = sc.nextLine();
+                Validator.validateAddress(address);
+
+                System.out.println("Enter the Phone Number of Doctor");
+                long phoneNumber = sc.nextLong();
+                Validator.validatePhoneNumber(phoneNumber);
+
+                Specialization specialization = getSpecialization();
+                System.out.println("Enter the Consultation Fee of Doctor");
+                int consultationFee = sc.nextInt();
+                Validator.validateConsultationFee(consultationFee);
+
+                System.out.println("Enter the daily Working hours of Doctor");
+                int workingHours = sc.nextInt();
+                Validator.validateWorkingHours(workingHours);
+                sc.nextLine();
+                System.out.println("Enter the License Number of Doctor");
+                String licenseNumber = sc.nextLine();
+                Validator.validateLicenseNumber(licenseNumber);
+
+                System.out.println("Enter the Experience (in years) of Doctor");
+                int yearsOfExperience = sc.nextInt();
+                Validator.validateExperience(yearsOfExperience, age);
+
+                Doctor doctor = new Doctor(name, dateOfBirth, age, gender, address, phoneNumber, specialization, consultationFee, workingHours, licenseNumber, yearsOfExperience);
+                doctorService.addDoctor(doctor);
+            } catch (DateTimeParseException e) {
                 System.out.println("Please enter the date in yyyy-MM-dd format.");
+            } catch (InvalidDataException e) {
+                System.out.println(e.getMessage());
             }
+    }
 
-
-
-
-
-
-
+    private static void searchDoctorByKeyword(){
+        sc.nextLine();
+        System.out.println("Enter the Name, ID, or Age to search for a Doctor");
+        String keyword = sc.nextLine();
+        List<Doctor> doctors = doctorService.searchDoctorsByKeyword(keyword);
+        if (doctors.isEmpty()) {
+            System.out.println("No doctors found matching: " + keyword);
+        } else {
+            doctors.forEach(doctorService::printDoctor);
+        }
     }
 
     private static Specialization getSpecialization(){

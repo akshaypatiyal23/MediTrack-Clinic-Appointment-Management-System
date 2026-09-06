@@ -1,6 +1,6 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.interfaces.Payable;
+import com.airtribe.meditrack.interfaces.Payable;
 
 public class EmergencyBill extends Bill implements Payable {
     public EmergencyBill(int billId, Patient patient, Appointment appointment, double consultationFee) {

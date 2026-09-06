@@ -1,11 +1,11 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.enums.AppointmentStatus;
-import main.java.com.airtribe.meditrack.util.IdGenerator;
+import com.airtribe.meditrack.enums.AppointmentStatus;
+import com.airtribe.meditrack.util.IdGenerator;
 
 import java.time.LocalDateTime;
 
-public class Appointment{
+public class Appointment implements Cloneable {
 
 private int appointmentId;
 private Doctor doctor;
@@ -59,5 +59,17 @@ private AppointmentStatus status;
 
     public void setStatus(AppointmentStatus status) {
         this.status = status;
+    }
+    
+    @Override
+    public Appointment clone() {
+        try {
+            Appointment cloned = (Appointment) super.clone();
+            cloned.doctor = this.doctor.clone();
+            cloned.patient = this.patient.clone();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 }
