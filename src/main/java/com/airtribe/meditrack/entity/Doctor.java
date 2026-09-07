@@ -1,15 +1,12 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.entity.Person;
-import main.java.com.airtribe.meditrack.enums.Gender;
-import main.java.com.airtribe.meditrack.enums.Specialization;
-import main.java.com.airtribe.meditrack.interfaces.Searchable;
-import main.java.com.airtribe.meditrack.util.IdGenerator;
+import com.airtribe.meditrack.enums.Gender;
+import com.airtribe.meditrack.enums.Specialization;
+import com.airtribe.meditrack.util.IdGenerator;
 
 import java.time.LocalDate;
-import java.util.Date;
 
-public class Doctor extends Person implements Searchable {
+public class Doctor extends Person implements Cloneable {
    private Specialization specialization;
    private int consultationFee;
    private int workingHours;
@@ -66,10 +63,18 @@ public class Doctor extends Person implements Searchable {
     }
 
     @Override
-    public boolean matches(String keyword) {
-        return getName().equalsIgnoreCase(keyword) || String.valueOf(getId()).equals(keyword) || String.valueOf(getAge()).equals(keyword);
+    public String getDetails() {
+        return super.getDetails() +
+                ", Specialization: " + specialization +
+                ", Consultation Fee: " + consultationFee;
     }
 
+    @Override
+    public Doctor clone() {
+        try {
+            return (Doctor) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
 }
-
-

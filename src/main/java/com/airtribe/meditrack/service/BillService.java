@@ -1,38 +1,22 @@
-package main.java.com.airtribe.meditrack.service;
+package com.airtribe.meditrack.service;
 
-import main.java.com.airtribe.meditrack.entity.*;
-import main.java.com.airtribe.meditrack.exception.InvalidDataException;
-import main.java.com.airtribe.meditrack.util.IdGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.airtribe.meditrack.entity.*;
+import com.airtribe.meditrack.enums.BillType;
+import com.airtribe.meditrack.exception.InvalidDataException;
+import com.airtribe.meditrack.util.DataStore;
 
 public class BillService {
-    private List<Bill> allBills = new ArrayList<>();
+    private final DataStore<Bill> bills = new DataStore<>(Bill::getBillId);
+
     public Bill generateBill(Appointment appointment) {
-
-        double consultationFee =
-                appointment.getDoctor().getConsultationFee();
-
-
-       Bill bill = new Bill(IdGenerator.getBillId(), appointment.getPatient(), appointment, consultationFee);
-        allBills.add(bill);
+        Bill bill = BillFactory.createBill(BillType.CONSULTATION, appointment);
+        bills.add(bill);
         return bill;
-
     }
 
     public EmergencyBill generateEmergencyBill(Appointment appointment) {
-
-        double consultationFee = appointment.getDoctor().getConsultationFee();
-
-        EmergencyBill bill = new EmergencyBill(
-                IdGenerator.getBillId(),
-                appointment.getPatient(), appointment,
-                consultationFee
-        );
-
-        allBills.add(bill);
-
+        EmergencyBill bill = (EmergencyBill) BillFactory.createBill(BillType.EMERGENCY, appointment);
+        bills.add(bill);
         return bill;
     }
 
@@ -53,18 +37,16 @@ public class BillService {
         System.out.println("Doctor: " + billSummary.getDoctorName());
         System.out.println("Consultation Fee: ₹" + billSummary.getConsultationFee());
         System.out.println("Tax: ₹" + billSummary.getTax());
-        System.out.println("Total Amount: ₹" + billSummary.getTotalAmount());
+        System.out.println("Total Amount: " + bill.formattedAmount());
 
         System.out.println("==================================");
     }
 
-    public Bill searchBillById(int id){
-        for(Bill bill: allBills){
-            if(bill.getBillId()==id){
-                return bill;
-            }
+    public Bill searchBillById(int id) {
+        Bill bill = bills.getById(id);
+        if (bill == null) {
+            throw new InvalidDataException("No Bills found with id: " + id);
         }
-
-        throw new InvalidDataException("No Bills found with id: "+id);
+        return bill;
     }
 }

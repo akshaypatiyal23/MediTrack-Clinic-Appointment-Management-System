@@ -1,4 +1,4 @@
-package main.java.com.airtribe.meditrack.enums;
+package com.airtribe.meditrack.enums;
 
 public enum Specialization {
 

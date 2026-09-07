@@ -1,10 +1,10 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.interfaces.Payable;
+import com.airtribe.meditrack.interfaces.Payable;
 
 public class ConsultationBill extends Bill implements Payable {
 
-    public ConsultationBill(int billId, Patient patient, Appointment appointment, double consultationFee, double tax, double totalAmount) {
+    public ConsultationBill(int billId, Patient patient, Appointment appointment, double consultationFee) {
         super(billId, patient, appointment, consultationFee);
     }
 

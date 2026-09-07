@@ -1,7 +1,7 @@
-package main.java.com.airtribe.meditrack.entity;
+package com.airtribe.meditrack.entity;
 
-import main.java.com.airtribe.meditrack.enums.Specialization;
-import main.java.com.airtribe.meditrack.enums.Symptom;
+import com.airtribe.meditrack.enums.Specialization;
+import com.airtribe.meditrack.enums.Symptom;
 
 public class SymptomRecommendationRule {
     private Symptom symptom;

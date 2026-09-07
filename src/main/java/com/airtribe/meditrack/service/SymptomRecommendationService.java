@@ -1,8 +1,8 @@
-package main.java.com.airtribe.meditrack.service;
+package com.airtribe.meditrack.service;
 
-import main.java.com.airtribe.meditrack.entity.SymptomRecommendationRule;
-import main.java.com.airtribe.meditrack.enums.Specialization;
-import main.java.com.airtribe.meditrack.enums.Symptom;
+import com.airtribe.meditrack.entity.SymptomRecommendationRule;
+import com.airtribe.meditrack.enums.Specialization;
+import com.airtribe.meditrack.enums.Symptom;
 
 import java.util.ArrayList;
 import java.util.List;
