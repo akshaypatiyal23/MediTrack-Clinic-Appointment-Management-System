@@ -14,7 +14,7 @@ MediTrack provides functionality for managing:
 * 💳 Billing
 * 🚨 Emergency appointments and billing
 * 🩺 Doctor recommendations based on symptoms
-* 🔔 Appointment notifications
+* 🔔 Appointment notifications 
 
 The application follows a service-oriented structure where the `Main` class handles console interaction and dedicated service classes handle business operations.
 
